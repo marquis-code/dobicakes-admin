@@ -27,31 +27,72 @@
             <p class="text-[8px] text-brand-gold  tracking-[0.2em] font-bold">{{ new Date(post.createdAt).toLocaleDateString() }}</p>
             <h4 class="text-xs font-bold text-slate-900  tracking-widest line-clamp-2 leading-relaxed">{{ post.title }}</h4>
           </div>
-          <div class="flex justify-between items-center pt-4 border-t border-gray-50">
+            <div class="flex justify-between items-center pt-4 border-t border-gray-50">
             <span class="text-[9px] text-gray-400  tracking-widest font-medium">By {{ post.author }}</span>
             <div class="flex gap-4">
               <button class="text-gray-300 hover:text-brand-gold transition-colors"><LucideEdit :size="14" /></button>
-              <button class="text-gray-300 hover:text-rose-500 transition-colors"><LucideTrash :size="14" /></button>
+              <button @click="confirmDelete(post)" class="text-gray-300 hover:text-rose-500 transition-colors"><LucideTrash :size="14" /></button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmationModal
+      :is-open="isDeleteModalOpen"
+      title="Delete Article"
+      :message="`Are you sure you want to delete the article '${postToDelete?.title}'? This action cannot be undone.`"
+      confirm-text="Delete Article"
+      cancel-text="Cancel"
+      type="danger"
+      :is-loading="isDeleting"
+      @close="isDeleteModalOpen = false"
+      @confirm="executeDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { LucidePlus, LucideEdit, LucideTrash } from 'lucide-vue-next';
-const { fetchAdmin } = useAdminApi();
+import ConfirmationModal from '@/components/ui/ConfirmationModal.vue';
+const { fetchAdmin, deleteAdmin } = useAdminApi();
 
 const posts = ref([]);
 
-onMounted(async () => {
+// Delete Modal State
+const isDeleteModalOpen = ref(false);
+const postToDelete = ref(null);
+const isDeleting = ref(false);
+
+const loadPosts = async () => {
   posts.value = await fetchAdmin('/blog');
+};
+
+onMounted(() => {
+  loadPosts();
 });
 
 const createNewPost = () => {
   // Logic to show post editor
+};
+
+const confirmDelete = (post) => {
+  postToDelete.value = post;
+  isDeleteModalOpen.value = true;
+};
+
+const executeDelete = async () => {
+  if (!postToDelete.value) return;
+  isDeleting.value = true;
+  try {
+    await deleteAdmin(`/blog/${postToDelete.value._id}`);
+    await loadPosts();
+  } finally {
+    isDeleting.value = false;
+    isDeleteModalOpen.value = false;
+    postToDelete.value = null;
+  }
 };
 
 definePageMeta({ layout: 'default' });

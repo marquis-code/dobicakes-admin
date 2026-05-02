@@ -45,7 +45,7 @@
             <p class="text-[10px] text-slate-400 tracking-widest uppercase">{{ selectedForm.description || 'No description provided' }}</p>
           </div>
           <div class="flex gap-4 w-full sm:w-auto">
-            <button class="flex-grow sm:flex-grow-0 px-6 py-2.5 text-[10px] font-bold tracking-widest text-rose-400 hover:text-rose-600 uppercase transition-colors">Delete</button>
+            <button @click="confirmDeleteForm" class="flex-grow sm:flex-grow-0 px-6 py-2.5 text-[10px] font-bold tracking-widest text-rose-400 hover:text-rose-600 uppercase transition-colors">Delete</button>
             <button class="flex-grow sm:flex-grow-0 bg-slate-900 text-white px-8 py-2.5 text-[10px] font-bold tracking-widest uppercase rounded-lg shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-all">Share Link</button>
           </div>
         </div>
@@ -83,11 +83,11 @@
                 </label>
               </div>
             </div>
-            <button class="p-2 text-slate-200 hover:text-rose-500 transition-all hover:bg-rose-50 rounded-lg sm:opacity-0 group-hover:opacity-100">
+            <button @click="removeField(i)" class="p-2 text-slate-200 hover:text-rose-500 transition-all hover:bg-rose-50 rounded-lg sm:opacity-0 group-hover:opacity-100">
               <LucideTrash :size="16" />
             </button>
           </div>
-          <button class="w-full py-6 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-[10px] font-bold tracking-widest uppercase hover:border-brand-gold hover:text-brand-gold hover:bg-brand-gold/5 transition-all flex items-center justify-center gap-3">
+          <button @click="addField" class="w-full py-6 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-[10px] font-bold tracking-widest uppercase hover:border-brand-gold hover:text-brand-gold hover:bg-brand-gold/5 transition-all flex items-center justify-center gap-3">
             <LucidePlus :size="16" />
             Add Designer Field
           </button>
@@ -117,23 +117,46 @@
 
       </div>
     </div>
+    
+    <!-- Delete Form Modal -->
+    <ConfirmationModal
+      :is-open="isDeleteModalOpen"
+      title="Delete Form"
+      :message="`Are you sure you want to delete the form '${selectedForm?.title}'? This will permanently erase all associated field definitions and submission data. This action cannot be undone.`"
+      confirm-text="Delete Form"
+      cancel-text="Keep Form"
+      type="danger"
+      :is-loading="isDeleting"
+      @close="isDeleteModalOpen = false"
+      @confirm="executeDeleteForm"
+    />
   </div>
 </template>
 
 <script setup>
 import { LucideFormInput, LucideTrash, LucidePlus, LucideChevronRight } from 'lucide-vue-next';
-const { fetchAdmin } = useAdminApi();
+import ConfirmationModal from '@/components/ui/ConfirmationModal.vue';
+
+const { fetchAdmin, deleteAdmin } = useAdminApi();
 
 const forms = ref([]);
 const selectedForm = ref(null);
 const tab = ref('build');
 
-onMounted(async () => {
+// Delete Modal State
+const isDeleteModalOpen = ref(false);
+const isDeleting = ref(false);
+
+const loadForms = async () => {
   try {
     forms.value = await fetchAdmin('/forms');
   } catch (e) {
     forms.value = [];
   }
+};
+
+onMounted(() => {
+  loadForms();
 });
 
 const createNewForm = () => {
@@ -145,6 +168,37 @@ const createNewForm = () => {
     isActive: true
   };
   tab.value = 'build';
+};
+
+const removeField = (index) => {
+  selectedForm.value.fields.splice(index, 1);
+};
+
+const addField = () => {
+  selectedForm.value.fields.push({ label: 'New Field', type: 'text', required: false });
+};
+
+const confirmDeleteForm = () => {
+  isDeleteModalOpen.value = true;
+};
+
+const executeDeleteForm = async () => {
+  if (!selectedForm.value?._id) {
+    // If it's a new unsaved form, just clear selection
+    selectedForm.value = null;
+    isDeleteModalOpen.value = false;
+    return;
+  }
+  
+  isDeleting.value = true;
+  try {
+    await deleteAdmin(`/forms/${selectedForm.value._id}`);
+    await loadForms();
+    selectedForm.value = null;
+  } finally {
+    isDeleting.value = false;
+    isDeleteModalOpen.value = false;
+  }
 };
 
 definePageMeta({ layout: 'default' });

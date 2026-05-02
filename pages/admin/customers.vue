@@ -48,7 +48,7 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 text-right">
-                  <button class="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50/50 rounded-lg transition-all">
+                  <button @click="confirmDelete(user)" class="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50/50 rounded-lg transition-all">
                     <LucideShieldAlert :size="16" />
                   </button>
                 </td>
@@ -65,17 +65,36 @@
         :icon="LucideUsers"
       />
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmationModal
+      :is-open="isDeleteModalOpen"
+      title="Remove Customer"
+      :message="`Are you sure you want to remove ${customerToDelete?.firstName || 'this customer'}? They will lose access to their account and order history.`"
+      confirm-text="Remove Customer"
+      cancel-text="Cancel"
+      type="danger"
+      :is-loading="isDeleting"
+      @close="isDeleteModalOpen = false"
+      @confirm="executeDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { LucideShieldAlert, LucideUsers } from 'lucide-vue-next';
-const { fetchAdmin } = useAdminApi();
+import ConfirmationModal from '@/components/ui/ConfirmationModal.vue';
+const { fetchAdmin, deleteAdmin } = useAdminApi();
 
 const customers = ref([]);
 const loading = ref(true);
 
-onMounted(async () => {
+// Delete Modal State
+const isDeleteModalOpen = ref(false);
+const customerToDelete = ref(null);
+const isDeleting = ref(false);
+
+const loadCustomers = async () => {
   loading.value = true;
   try {
     customers.value = await fetchAdmin('/users');
@@ -84,6 +103,28 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const confirmDelete = (customer) => {
+  customerToDelete.value = customer;
+  isDeleteModalOpen.value = true;
+};
+
+const executeDelete = async () => {
+  if (!customerToDelete.value) return;
+  isDeleting.value = true;
+  try {
+    await deleteAdmin(`/users/${customerToDelete.value._id}`);
+    await loadCustomers();
+  } finally {
+    isDeleting.value = false;
+    isDeleteModalOpen.value = false;
+    customerToDelete.value = null;
+  }
+};
+
+onMounted(() => {
+  loadCustomers();
 });
 
 definePageMeta({ layout: 'default' });

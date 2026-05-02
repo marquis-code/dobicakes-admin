@@ -27,7 +27,7 @@
       </nav>
 
       <div class="p-6 border-t border-slate-800/50">
-        <button @click="handleLogout" class="flex items-center gap-3 px-4 py-3 w-full text-slate-400 hover:text-white transition-colors text-xs font-semibold hover:bg-rose-500/10 rounded-lg group">
+        <button @click="confirmLogout" class="flex items-center gap-3 px-4 py-3 w-full text-slate-400 hover:text-white transition-colors text-xs font-semibold hover:bg-rose-500/10 rounded-lg group">
           <LucideLogOut :size="16" class="group-hover:translate-x-1 transition-transform" />
           Logout
         </button>
@@ -61,6 +61,18 @@
         </div>
       </main>
     </div>
+
+    <!-- Logout Confirmation Modal -->
+    <ConfirmationModal
+      :is-open="isLogoutModalOpen"
+      title="Confirm Logout"
+      message="Are you sure you want to end your current session? You will need to sign in again to access the dashboard."
+      confirm-text="Logout"
+      cancel-text="Cancel"
+      type="danger"
+      @close="isLogoutModalOpen = false"
+      @confirm="handleLogout"
+    />
   </div>
 </template>
 
@@ -70,10 +82,13 @@ import {
   LucideFileText, LucideLogOut, LucideFormInput, LucideCalendar, 
   LucideMessageSquare, LucideSettings, LucideMegaphone, LucideMail, LucideHelpCircle, LucideMenu, LucideX
 } from 'lucide-vue-next';
+import ConfirmationModal from '@/components/ui/ConfirmationModal.vue';
 
 const { admin, logout } = useAdminAuth();
 const route = useRoute();
 const isSidebarOpen = ref(false);
+
+const isLogoutModalOpen = ref(false);
 
 const navLinks = [
   { to: '/admin', label: 'Overview', icon: LucideLayoutDashboard },
@@ -96,7 +111,12 @@ const currentPageTitle = computed(() => {
   return link ? link.label : 'Dashboard';
 });
 
+const confirmLogout = () => {
+  isLogoutModalOpen.value = true;
+};
+
 const handleLogout = () => {
+  isLogoutModalOpen.value = false;
   logout();
 };
 </script>

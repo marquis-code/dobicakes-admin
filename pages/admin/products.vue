@@ -54,7 +54,7 @@
                 <td class="px-6 py-4 text-right">
                   <div class="flex justify-end gap-3">
                     <button @click="editProduct(product)" class="p-2 text-slate-400 hover:text-brand-gold hover:bg-brand-gold/5 rounded-lg transition-all"><LucideEdit :size="16" /></button>
-                    <button @click="deleteProduct(product._id)" class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 rounded-lg transition-all"><LucideTrash :size="16" /></button>
+                    <button @click="confirmDelete(product)" class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-500/5 rounded-lg transition-all"><LucideTrash :size="16" /></button>
                   </div>
                 </td>
               </tr>
@@ -71,23 +71,44 @@
       />
     </div>
 
-    <ProductsProductModal 
-      :is-open="showModal" 
-      :product="selectedProduct"
-      @close="closeModal" 
-      @saved="loadProducts" 
-    />
+    <ClientOnly>
+      <ProductsProductModal 
+        :is-open="showModal" 
+        :product="selectedProduct"
+        @close="closeModal" 
+        @saved="loadProducts" 
+      />
+
+      <!-- Delete Confirmation Modal -->
+      <ConfirmationModal
+        :is-open="isDeleteModalOpen"
+        title="Delete Product"
+        :message="`Are you sure you want to delete ${productToDelete?.name || 'this product'}? This action cannot be undone.`"
+        confirm-text="Delete Product"
+        cancel-text="Cancel"
+        type="danger"
+        :is-loading="isDeleting"
+        @close="isDeleteModalOpen = false"
+        @confirm="executeDelete"
+      />
+    </ClientOnly>
   </div>
 </template>
 
 <script setup>
 import { LucidePlus, LucideEdit, LucideTrash, LucideBox } from 'lucide-vue-next';
+import ConfirmationModal from '@/components/ui/ConfirmationModal.vue';
 const { fetchAdmin, deleteAdmin } = useAdminApi();
 
 const products = ref([]);
 const loading = ref(true);
 const showModal = ref(false);
 const selectedProduct = ref(null);
+
+// Delete Modal State
+const isDeleteModalOpen = ref(false);
+const productToDelete = ref(null);
+const isDeleting = ref(false);
 
 const loadProducts = async () => {
   loading.value = true;
@@ -108,10 +129,21 @@ const closeModal = () => {
   selectedProduct.value = null;
 };
 
-const deleteProduct = async (id) => {
-  if (confirm('Are you sure you want to delete this exquisite creation?')) {
-    await deleteAdmin(`/products/${id}`);
+const confirmDelete = (product) => {
+  productToDelete.value = product;
+  isDeleteModalOpen.value = true;
+};
+
+const executeDelete = async () => {
+  if (!productToDelete.value) return;
+  isDeleting.value = true;
+  try {
+    await deleteAdmin(`/products/${productToDelete.value._id}`);
     await loadProducts();
+  } finally {
+    isDeleting.value = false;
+    isDeleteModalOpen.value = false;
+    productToDelete.value = null;
   }
 };
 

@@ -16,7 +16,7 @@
             <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-900 shadow-xl hover:scale-110 transition-transform">
               <LucideEdit :size="18" />
             </button>
-            <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-xl hover:scale-110 transition-transform">
+            <button @click="confirmDelete(banner)" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-xl hover:scale-110 transition-transform">
               <LucideTrash :size="18" />
             </button>
           </div>
@@ -32,16 +32,54 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmationModal
+      :is-open="isDeleteModalOpen"
+      title="Delete Banner"
+      :message="`Are you sure you want to delete the banner '${bannerToDelete?.title}'? This action cannot be undone.`"
+      confirm-text="Delete Banner"
+      cancel-text="Cancel"
+      type="danger"
+      :is-loading="isDeleting"
+      @close="isDeleteModalOpen = false"
+      @confirm="executeDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { LucideEdit, LucideTrash } from 'lucide-vue-next';
 import { ref, onMounted } from 'vue';
+import ConfirmationModal from '@/components/ui/ConfirmationModal.vue';
 
 // Use Fetch logic directly as it's a simple CRUD
 const banners = ref([
   { _id: '1', title: 'Artisan Cakes', subtitle: 'Handcrafted for Your Special Moments', imageUrl: 'https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?auto=format&fit=crop&q=80&w=2000', active: true },
   { _id: '2', title: 'Wedding Collection', subtitle: 'Exquisite designs for your big day', imageUrl: 'https://images.unsplash.com/photo-1535254973040-607b474cb80d?auto=format&fit=crop&q=80&w=800', active: true }
 ]);
+
+// Delete Modal State
+const isDeleteModalOpen = ref(false);
+const bannerToDelete = ref(null);
+const isDeleting = ref(false);
+
+const confirmDelete = (banner) => {
+  bannerToDelete.value = banner;
+  isDeleteModalOpen.value = true;
+};
+
+const executeDelete = async () => {
+  if (!bannerToDelete.value) return;
+  isDeleting.value = true;
+  
+  // Simulated API call delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  banners.value = banners.value.filter(b => b._id !== bannerToDelete.value._id);
+  
+  isDeleting.value = false;
+  isDeleteModalOpen.value = false;
+  bannerToDelete.value = null;
+};
 </script>
