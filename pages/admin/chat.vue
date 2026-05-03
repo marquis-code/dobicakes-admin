@@ -12,7 +12,7 @@
           <NuxtLink to="/admin" class="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center hover:bg-brand-gold transition-all group shadow-lg shadow-slate-900/10">
             <LucideLayoutDashboard :size="14" />
           </NuxtLink>
-          <span class="text-[11px] font-bold text-slate-400 tracking-widest uppercase">Concierge</span>
+          <span class="text-xs font-bold text-slate-400 tracking-tight ">Concierge</span>
         </div>
         <div class="flex gap-4 text-[#54656f]">
           <LucideMessageSquare :size="20" class="cursor-pointer hover:text-brand-gold transition-colors" />
@@ -45,11 +45,11 @@
           <div class="flex-grow min-w-0 pr-2">
             <div class="flex justify-between items-baseline mb-1">
               <h3 class="text-[#111b21] text-base font-normal truncate">{{ room.userName }}</h3>
-              <span class="text-[11px] text-[#667781]">{{ formatTimeShort(room.createdAt) }}</span>
+              <span class="text-xs text-[#667781]">{{ formatTimeShort(room.createdAt) }}</span>
             </div>
             <div class="flex justify-between items-center">
-              <p class="text-[13px] text-[#667781] truncate">{{ room.displayMessage }}</p>
-              <div v-if="room.unreadCount > 0" class="bg-[#25d366] text-white text-[11px] font-bold min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">
+              <p class="text-sm text-[#667781] truncate">{{ room.displayMessage }}</p>
+              <div v-if="room.unreadCount > 0" class="bg-[#25d366] text-white text-xs font-bold min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">
                 {{ room.unreadCount }}
               </div>
             </div>
@@ -75,7 +75,7 @@
           </div>
           <div>
             <h4 class="text-base text-[#111b21] leading-tight font-normal">{{ selectedRoom.userName }}</h4>
-            <p class="text-[11px] text-[#667781]">{{ isOnline ? 'online' : 'last seen recently' }}</p>
+            <p class="text-xs text-[#667781]">{{ isOnline ? 'online' : 'last seen recently' }}</p>
           </div>
         </div>
         <div class="flex gap-4 text-[#54656f]">
@@ -99,12 +99,12 @@
         
         <div class="grid grid-cols-2 gap-4 mt-12 max-w-xl">
            <div class="p-6 bg-white/50 rounded-2xl border border-slate-200/50 text-left">
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Auto-Responder</p>
-              <p class="text-[11px] text-slate-500 leading-relaxed">Configure automated greetings and delay messages to ensure no customer feels neglected.</p>
+              <p class="text-sm font-bold text-slate-400  tracking-tight mb-2">Auto-Responder</p>
+              <p class="text-xs text-slate-500 leading-relaxed">Configure automated greetings and delay messages to ensure no customer feels neglected.</p>
            </div>
            <div class="p-6 bg-white/50 rounded-2xl border border-slate-200/50 text-left">
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Quick Responses</p>
-              <p class="text-[11px] text-slate-500 leading-relaxed">Save frequently used artisanal descriptions and consultation details for rapid dispatch.</p>
+              <p class="text-sm font-bold text-slate-400  tracking-tight mb-2">Quick Responses</p>
+              <p class="text-xs text-slate-500 leading-relaxed">Save frequently used artisanal descriptions and consultation details for rapid dispatch.</p>
            </div>
         </div>
       </div>
@@ -115,7 +115,7 @@
              :class="msg.senderType === 'ADMIN' ? 'justify-end' : 'justify-start'"
              class="flex mb-1 animate-fade-in">
           <div :class="msg.senderType === 'ADMIN' ? 'bg-[#d9fdd3] text-[#111b21]' : 'bg-white text-[#111b21]'"
-               class="max-w-[90%] md:max-w-[85%] lg:max-w-[65%] rounded-lg shadow-sm relative text-[13px] leading-normal min-w-[60px] overflow-hidden">
+               class="max-w-[90%] md:max-w-[85%] lg:max-w-[65%] rounded-lg shadow-sm relative text-sm leading-normal min-w-[60px] overflow-hidden">
             <!-- Media Attachment -->
             <div v-if="msg.attachments && Array.isArray(msg.attachments) && msg.attachments.length > 0" class="p-1">
               <img v-for="url in msg.attachments" :key="url" :src="url" class="w-full rounded-md object-cover max-h-[400px] cursor-zoom-in" />
@@ -125,7 +125,7 @@
               <p>{{ msg.message }}</p>
             </div>
             <div class="flex items-center justify-end gap-1 px-3 pb-2">
-              <span class="text-[9px] text-[#667781] uppercase">{{ formatTimeShort(msg.createdAt) }}</span>
+              <span class="text-tiny text-[#667781] ">{{ formatTimeShort(msg.createdAt) }}</span>
               <LucideCheck v-if="msg.senderType === 'ADMIN'" :size="12" class="text-[#53bdeb]" />
             </div>
           </div>
@@ -138,7 +138,7 @@
         <div class="bg-[#f0f2f5]/80 backdrop-blur-md px-4 py-2 border-t border-[#e9edef] flex gap-2 overflow-x-auto no-scrollbar">
           <button v-for="resp in quickResponses" :key="resp" 
                   @click="newMessage = resp; sendMessage()"
-                  class="whitespace-nowrap px-4 py-1.5 bg-white rounded-full text-[10px] font-bold text-slate-600 border border-slate-200 hover:border-brand-gold hover:text-brand-gold transition-all shadow-sm">
+                  class="whitespace-nowrap px-4 py-1.5 bg-white rounded-full text-sm font-bold text-slate-600 border border-slate-200 hover:border-brand-gold hover:text-brand-gold transition-all shadow-sm">
             {{ resp }}
           </button>
         </div>
@@ -174,7 +174,7 @@
               
               <div v-if="showEmojiPicker" class="absolute bottom-[40px] left-0 bg-white p-2 rounded-xl shadow-2xl border border-slate-200 z-50 w-[240px] animate-fade-in">
                 <div class="flex justify-between items-center mb-2 px-1">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Emojis</span>
+                  <span class="text-sm font-bold text-slate-400  tracking-tight">Emojis</span>
                   <button @click="showEmojiPicker = false" class="text-slate-400 hover:text-brand-gold">
                     <LucideX :size="14" />
                   </button>
@@ -211,29 +211,49 @@
         </div>
       </div>
 
-      <!-- Auto-Responder Settings Modal -->
-      <UiModal v-model="showAutoResponder" title="Concierge Automation">
-         <div class="space-y-6 py-4">
-            <div class="space-y-3">
-               <div class="flex justify-between items-center">
-                  <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Greeting Message</label>
-                  <div class="flex items-center gap-2">
-                     <input type="checkbox" v-model="autoResponder.enabled" class="accent-brand-gold" />
-                     <span class="text-[9px] font-bold text-slate-500 uppercase">Active</span>
-                  </div>
-               </div>
-               <textarea v-model="autoResponder.greeting" rows="3" class="admin-input" placeholder="Hello! Welcome to Adaobi Cakes..."></textarea>
-            </div>
+      <!-- Auto-Responder Settings Drawer -->
+      <UiDrawer 
+        :model-value="showAutoResponder" 
+        title="Concierge Intelligence"
+        subtitle="Automate your customer greeting and delay logic"
+        @update:model-value="showAutoResponder = false"
+      >
+        <div class="space-y-10 py-4">
+           <div class="p-6 bg-slate-50/50 rounded-2xl border border-slate-100 space-y-6">
+              <div class="flex justify-between items-center">
+                 <div class="flex flex-col">
+                   <span class="text-sm font-bold text-slate-900">Automation Status</span>
+                   <p class="text-tiny text-slate-500 font-medium">Toggle all automated responses</p>
+                 </div>
+                 <label class="relative inline-flex items-center cursor-pointer">
+                   <input v-model="autoResponder.enabled" type="checkbox" class="sr-only peer">
+                   <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-gold"></div>
+                 </label>
+              </div>
+           </div>
 
-            <div class="space-y-3">
-               <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Delayed Response Message</label>
-               <textarea v-model="autoResponder.delayMessage" rows="3" class="admin-input" placeholder="Our artisans are currently busy crafting..."></textarea>
-               <p class="text-[9px] text-slate-400 italic">Sent after 5 minutes of no activity.</p>
-            </div>
+           <div class="space-y-4">
+              <label class="admin-label">Greeting Narrative</label>
+              <textarea v-model="autoResponder.greeting" rows="4" class="admin-input !bg-white" placeholder="Hello! Welcome to Adaobi Cakes..."></textarea>
+              <p class="text-tiny text-slate-400 font-medium leading-relaxed italic">Sent instantly when a new customer initiates a conversation.</p>
+           </div>
 
-            <button @click="saveResponderSettings" class="w-full bg-slate-900 text-white py-4 rounded-xl text-[10px] font-bold tracking-widest uppercase hover:bg-brand-gold transition-all">Save Intelligence Settings</button>
-         </div>
-      </UiModal>
+           <div class="space-y-4">
+              <label class="admin-label">Delayed Response Strategy</label>
+              <textarea v-model="autoResponder.delayMessage" rows="4" class="admin-input !bg-white" placeholder="Our artisans are currently busy crafting..."></textarea>
+              <p class="text-tiny text-slate-400 font-medium leading-relaxed italic">Dispatched after 5 minutes of inactivity to maintain customer engagement.</p>
+           </div>
+        </div>
+
+        <template #footer>
+          <div class="flex justify-end gap-5">
+            <button @click="showAutoResponder = false" class="px-8 py-3.5 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">Dismiss</button>
+            <button @click="saveResponderSettings" class="btn-admin-primary px-10 py-3.5">
+              Sync Intelligence
+            </button>
+          </div>
+        </template>
+      </UiDrawer>
     </div>
   </div>
 </template>

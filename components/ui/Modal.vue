@@ -33,7 +33,7 @@
               <!-- Header -->
               <div class="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
                 <div>
-                  <DialogTitle as="h3" class="text-sm font-bold text-slate-900 tracking-tight uppercase">
+                  <DialogTitle as="h3" class="text-sm font-bold text-slate-900 tracking-tight ">
                     {{ title }}
                   </DialogTitle>
                 </div>

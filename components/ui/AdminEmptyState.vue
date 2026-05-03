@@ -5,7 +5,7 @@
     </div>
     <div class="space-y-2 max-w-xs">
       <h4 class="text-sm font-bold text-slate-900 tracking-tight">{{ title || 'No Records Found' }}</h4>
-      <p class="text-[11px] text-slate-400 leading-relaxed">{{ message || 'Your collection is currently empty. Start by adding your first entry.' }}</p>
+      <p class="text-xs text-slate-400 leading-relaxed">{{ message || 'Your collection is currently empty. Start by adding your first entry.' }}</p>
     </div>
     <slot name="action" />
   </div>

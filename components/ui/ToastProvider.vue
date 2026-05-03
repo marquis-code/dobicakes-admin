@@ -25,17 +25,17 @@
             <LucideInfo v-else class="h-5 w-5 text-brand-gold" />
           </div>
           <div class="flex-1 pt-0.5">
-            <p class="text-[11px] font-bold tracking-widest text-slate-900 uppercase">
+            <p class="text-xs font-bold tracking-tight text-slate-900 ">
               {{ toast.type }}
             </p>
-            <p class="mt-1 text-[10px] text-slate-500 font-medium leading-relaxed">
+            <p class="mt-1 text-sm text-slate-500 font-medium leading-relaxed">
               {{ toast.message }}
             </p>
           </div>
           <div class="ml-4 flex flex-shrink-0">
             <button
               @click="remove(toast.id)"
-              class="inline-flex rounded-md bg-white text-slate-300 hover:text-slate-500 transition-colors"
+              class="inline-flex rounded-md bg-white text-slate-900 hover:text-slate-500 transition-colors"
             >
               <LucideX class="h-4 w-4" />
             </button>

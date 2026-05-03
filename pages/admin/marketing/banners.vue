@@ -2,39 +2,57 @@
   <div class="space-y-8 animate-fade-in">
     <div class="flex justify-between items-center">
       <div>
-        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Banner Management</h3>
-        <p class="text-[10px] text-gray-400 tracking-widest uppercase">Hero Sliders & Promotional Graphics</p>
+        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Banner management</h3>
+        <p class="text-sm text-gray-800 tracking-tight ">Hero sliders & promotional graphics</p>
       </div>
-      <button @click="openCreateModal" class="bg-slate-900 text-white px-8 py-3 rounded-xl text-[10px] font-bold tracking-widest uppercase hover:bg-brand-gold transition-all shadow-lg shadow-slate-900/10">Add Banner</button>
+      <button @click="openCreateModal" class="bg-slate-900 text-white px-8 py-3 rounded-xl text-sm font-medium tracking-tight  hover:bg-brand-gold transition-all shadow-lg shadow-slate-900/10">Add Banner</button>
     </div>
 
     <div class="admin-card !p-0 relative min-h-[400px]">
       <UiAdminLoadingState v-if="loading" />
       
       <template v-else-if="banners.length > 0">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
-          <div v-for="banner in banners" :key="banner._id" class="bg-white border border-slate-100 rounded-2xl overflow-hidden group hover:shadow-xl transition-all duration-500">
-            <div class="aspect-[16/9] relative overflow-hidden">
-              <img :src="banner.imageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-              <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                <button @click="openEditModal(banner)" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-900 shadow-xl hover:scale-110 transition-transform">
-                  <LucideEdit :size="18" />
-                </button>
-                <button @click="confirmDelete(banner)" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-rose-500 shadow-xl hover:scale-110 transition-transform">
-                  <LucideTrash :size="18" />
-                </button>
-              </div>
-            </div>
-            <div class="p-6 space-y-2">
-              <div class="flex justify-between items-start">
-                <h4 class="text-xs font-bold tracking-widest text-slate-900 uppercase truncate pr-4">{{ banner.title }}</h4>
-                <button @click="toggleBannerStatus(banner)" :class="banner.active ? 'text-emerald-500 bg-emerald-50' : 'text-slate-400 bg-slate-50'" class="px-2 py-1 rounded-md text-[8px] font-bold tracking-widest uppercase transition-colors">
-                  {{ banner.active ? 'Active' : 'Inactive' }}
-                </button>
-              </div>
-              <p class="text-[10px] text-slate-400 tracking-widest line-clamp-1 italic">"{{ banner.subtitle }}"</p>
-            </div>
-          </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 border-b border-slate-100">
+              <tr class="text-sm font-bold tracking-tight text-slate-500">
+                <th class="px-6 py-3">Visual Asset</th>
+                <th class="px-6 py-3">Headline & Subtitle</th>
+                <th class="px-6 py-3">Status</th>
+                <th class="px-6 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50 text-xs text-slate-600">
+              <tr v-for="banner in banners" :key="banner._id" class="hover:bg-slate-50/50 transition-colors group">
+                <td class="px-6 py-3 w-48">
+                  <div class="aspect-[16/9] rounded-lg overflow-hidden border border-slate-100">
+                    <img :src="banner.imageUrl" class="w-full h-full object-cover" />
+                  </div>
+                </td>
+                <td class="px-6 py-3">
+                  <div class="flex flex-col space-y-1">
+                    <span class="font-bold text-slate-900 tracking-tight text-sm">{{ banner.title }}</span>
+                    <span class="text-slate-400 font-medium italic line-clamp-1 max-w-md">"{{ banner.subtitle }}"</span>
+                  </div>
+                </td>
+                <td class="px-6 py-3">
+                  <button @click="toggleBannerStatus(banner)" :class="banner.active ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 bg-slate-50'" class="px-3 py-1 rounded-md text-tiny font-bold tracking-tight transition-colors">
+                    {{ banner.active ? 'Active' : 'Disabled' }}
+                  </button>
+                </td>
+                <td class="px-6 py-3 text-right">
+                  <div class="flex justify-end gap-3">
+                    <button @click="openEditModal(banner)" class="text-slate-400 hover:text-brand-gold transition-colors">
+                      <LucideEdit :size="16" />
+                    </button>
+                    <button @click="confirmDelete(banner)" class="text-slate-400 hover:text-rose-500 transition-colors">
+                      <LucideTrash :size="16" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </template>
 
@@ -46,41 +64,68 @@
       />
     </div>
 
-    <!-- Banner Modal -->
-    <UiModal v-model="showModal" :title="isEditing ? 'Edit Banner' : 'Create Banner'">
-      <form @submit.prevent="saveBanner" class="space-y-6">
-        <div class="space-y-2">
-          <label class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Banner Title</label>
-          <input v-model="form.title" type="text" required class="w-full border-b border-slate-100 py-3 outline-none focus:border-brand-gold transition-colors text-xs" placeholder="e.g. Artisan Cake Collection" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Subtitle</label>
-          <input v-model="form.subtitle" type="text" required class="w-full border-b border-slate-100 py-3 outline-none focus:border-brand-gold transition-colors text-xs" placeholder="e.g. Handcrafted for your special moments" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Banner Overlay (Rich Text)</label>
-          <UiRichEditor v-model="form.content" placeholder="Compose high-impact promotional copy..." />
-        </div>
-        <div class="space-y-2">
-          <label class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Banner Image</label>
-          <div class="relative group">
-            <div class="aspect-[16/9] bg-slate-50 rounded-xl overflow-hidden border-2 border-dashed border-slate-200 flex items-center justify-center">
-              <img v-if="form.imageUrl" :src="form.imageUrl" class="w-full h-full object-cover" />
-              <div v-else class="text-center space-y-2">
-                <LucideUpload class="mx-auto text-slate-300" :size="32" />
-                <p class="text-[9px] text-slate-400 tracking-widest uppercase">Click to upload image</p>
-              </div>
+    <!-- Banner Drawer -->
+    <UiDrawer 
+      :model-value="showModal" 
+      :title="isEditing ? 'Edit Banner' : 'Create Banner'"
+      subtitle="Designing high-impact hero graphics for your storefront"
+      @update:model-value="showModal = false"
+    >
+      <form @submit.prevent="saveBanner" class="space-y-10 py-2">
+        <div class="space-y-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-2.5">
+              <label class="admin-label">Banner Headline</label>
+              <input v-model="form.title" type="text" required class="admin-input w-full" placeholder="e.g. Artisan Collection" />
             </div>
-            <input type="file" @change="handleFileUpload" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
+            <div class="space-y-2.5">
+              <label class="admin-label">Promotional Subtitle</label>
+              <input v-model="form.subtitle" type="text" required class="admin-input w-full" placeholder="e.g. Handcrafted Excellence" />
+            </div>
+          </div>
+
+          <div class="space-y-2.5">
+            <label class="admin-label">Banner Overlay Copy</label>
+            <UiRichEditor v-model="form.content" placeholder="Compose high-impact promotional copy..." />
+          </div>
+
+          <div class="space-y-2.5">
+            <label class="admin-label">Creative Asset (16:9 recommended)</label>
+            <div class="relative group aspect-video rounded-[2rem] overflow-hidden bg-slate-50 border-2 border-dashed border-slate-200 hover:border-brand-gold/50 transition-all cursor-pointer">
+              <img v-if="form.imageUrl" :src="form.imageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div v-else class="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-100 group-hover:scale-110 transition-transform">
+                  <LucideUpload class="text-slate-900" :size="28" />
+                </div>
+                <p class="text-tiny font-bold text-slate-400 tracking-tight">Select Visual Asset</p>
+              </div>
+              <input type="file" @change="handleFileUpload" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
+            </div>
+          </div>
+
+          <div class="p-6 bg-slate-50/50 rounded-2xl border border-slate-100 flex items-center justify-between group">
+            <div class="flex flex-col">
+              <span class="text-sm font-bold text-slate-900">Active Campaign</span>
+              <p class="text-tiny text-slate-500 font-medium">Display this banner in the hero slider</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input v-model="form.active" type="checkbox" class="sr-only peer">
+              <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-gold"></div>
+            </label>
           </div>
         </div>
-        <div class="flex gap-4 pt-4">
-          <button type="submit" :disabled="isSaving" class="flex-grow bg-slate-900 text-white py-4 rounded-xl text-[10px] font-bold tracking-widest uppercase hover:bg-brand-gold transition-all disabled:opacity-50">
-            {{ isSaving ? 'Saving...' : 'Confirm Banner' }}
+      </form>
+
+      <template #footer>
+        <div class="flex justify-end gap-5">
+          <button @click="showModal = false" class="px-8 py-3.5 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">Cancel</button>
+          <button @click="saveBanner" :disabled="isSaving" class="btn-admin-primary px-12 py-3.5">
+            <LucideLoader2 v-if="isSaving" class="animate-spin mr-2" :size="18" />
+            {{ isEditing ? 'Update Banner' : 'Create Banner' }}
           </button>
         </div>
-      </form>
-    </UiModal>
+      </template>
+    </UiDrawer>
 
     <!-- Delete Confirmation -->
     <ConfirmationModal

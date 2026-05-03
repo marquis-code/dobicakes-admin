@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-8 animate-fade-in">
     <div class="flex justify-between items-center">
-      <div>
-        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Customer Enquiries</h3>
-        <p class="text-[10px] text-slate-400 tracking-widest uppercase">Manage contact form submissions</p>
+      <div class="flex flex-col gap-1">
+        <h3 class="text-xl font-bold text-slate-900 tracking-tight">Customer enquiries</h3>
+        <p class="text-sm text-slate-500 font-medium tracking-tight">Manage contact form submissions</p>
       </div>
     </div>
 
@@ -13,31 +13,31 @@
       <template v-else-if="enquiries.length > 0">
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
-            <thead class="bg-slate-50 border-b border-slate-100">
+            <thead class="bg-slate-50/50 border-b border-slate-100">
               <tr>
-                <th class="px-6 py-4 text-[10px] tracking-widest font-bold text-slate-400 uppercase">Sender</th>
-                <th class="px-6 py-4 text-[10px] tracking-widest font-bold text-slate-400 uppercase">Subject</th>
-                <th class="px-6 py-4 text-[10px] tracking-widest font-bold text-slate-400 uppercase">Status</th>
-                <th class="px-6 py-4 text-[10px] tracking-widest font-bold text-slate-400 uppercase text-right">Date</th>
+                <th class="px-8 py-3 text-xs font-bold text-slate-500 tracking-tight">Sender</th>
+                <th class="px-8 py-3 text-xs font-bold text-slate-500 tracking-tight">Subject</th>
+                <th class="px-8 py-3 text-xs font-bold text-slate-500 tracking-tight">Status</th>
+                <th class="px-8 py-3 text-xs font-bold text-slate-500 tracking-tight text-right">Date</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-50 text-sm">
+            <tbody class="divide-y divide-slate-50">
               <tr v-for="item in enquiries" :key="item._id" @click="viewEnquiry(item)" class="hover:bg-slate-50/50 transition-colors cursor-pointer group">
-                <td class="px-6 py-4">
-                  <div class="flex flex-col">
-                    <span class="font-bold text-slate-900 text-[11px] tracking-widest">{{ item.name }}</span>
-                    <span class="text-[9px] text-slate-400 tracking-widest">{{ item.email }}</span>
+                <td class="px-8 py-3">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="font-bold text-slate-900 text-sm tracking-tight">{{ item.name }}</span>
+                    <span class="text-xs text-slate-500 font-medium">{{ item.email }}</span>
                   </div>
                 </td>
-                <td class="px-6 py-4">
-                  <p class="text-[11px] text-slate-600 truncate max-w-xs">{{ item.subject }}</p>
+                <td class="px-8 py-3">
+                  <p class="text-sm text-slate-600 truncate max-w-xs font-medium">{{ item.subject }}</p>
                 </td>
-                <td class="px-6 py-4">
-                  <span :class="getStatusClass(item.status)" class="text-[9px] font-bold tracking-widest px-2 py-1 rounded-md uppercase">
+                <td class="px-8 py-3">
+                  <span :class="getStatusClass(item.status)" class="text-tiny font-bold tracking-wide px-3 py-1.5 rounded-lg border">
                     {{ item.status }}
                   </span>
                 </td>
-                <td class="px-6 py-4 text-right text-[10px] text-slate-400 tracking-widest">
+                <td class="px-8 py-3 text-right text-xs text-slate-500 font-medium">
                   {{ new Date(item.createdAt).toLocaleDateString() }}
                 </td>
               </tr>
@@ -54,46 +54,72 @@
       />
     </div>
 
-    <!-- Enquiry Detail Modal -->
-    <div v-if="selectedEnquiry" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="selectedEnquiry = null"></div>
-      <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-          <div>
-            <h4 class="text-lg font-bold text-slate-900 tracking-tight">{{ selectedEnquiry.subject }}</h4>
-            <p class="text-[10px] text-slate-400 tracking-widest uppercase">From {{ selectedEnquiry.name }}</p>
+    <!-- Enquiry Detail Drawer -->
+    <UiDrawer 
+      :model-value="!!selectedEnquiry" 
+      :title="selectedEnquiry?.subject || 'Enquiry Detail'"
+      :subtitle="`Message from ${selectedEnquiry?.name}`"
+      @update:model-value="selectedEnquiry = null"
+    >
+      <div v-if="selectedEnquiry" class="space-y-12 py-4">
+        <div class="flex flex-wrap gap-8">
+          <div class="flex items-center gap-3">
+             <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
+               <LucideMail :size="18" />
+             </div>
+             <div class="flex flex-col">
+               <span class="text-tiny font-bold text-slate-400 tracking-tight">Email Address</span>
+               <p class="text-sm font-bold text-slate-900">{{ selectedEnquiry.email }}</p>
+             </div>
           </div>
-          <button @click="selectedEnquiry = null" class="text-slate-400 hover:text-slate-600 transition-colors">
-            <LucideX :size="20" />
-          </button>
+          <div class="flex items-center gap-3">
+             <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
+               <LucideCalendar :size="18" />
+             </div>
+             <div class="flex flex-col">
+               <span class="text-tiny font-bold text-slate-400 tracking-tight">Submitted On</span>
+               <p class="text-sm font-bold text-slate-900">{{ new Date(selectedEnquiry.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) }}</p>
+             </div>
+          </div>
         </div>
-        
-        <div class="p-8 space-y-8">
-          <div class="space-y-2">
-            <label class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Message Body</label>
-            <div class="p-4 bg-slate-50 rounded-lg text-xs text-slate-600 leading-relaxed italic">
-              "{{ selectedEnquiry.message }}"
-            </div>
-          </div>
 
-          <div v-if="selectedEnquiry.adminReply" class="space-y-2">
-            <label class="text-[10px] font-bold tracking-widest text-brand-gold uppercase">Your Response</label>
-            <div class="p-4 bg-brand-gold/5 border border-brand-gold/10 rounded-lg text-xs text-slate-700 leading-relaxed">
-              {{ selectedEnquiry.adminReply }}
+        <div class="space-y-4">
+          <label class="admin-label">Customer Message</label>
+          <div class="p-8 bg-slate-50/50 rounded-[2rem] text-sm text-slate-600 leading-relaxed italic border border-slate-100 relative">
+            <div class="absolute -top-3 -left-3 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-50 text-slate-200">
+              <LucideMessageSquare :size="16" />
             </div>
+            "{{ selectedEnquiry.message }}"
           </div>
+        </div>
 
-          <div v-else class="space-y-4">
-            <label class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Compose Reply</label>
-            <textarea v-model="replyText" rows="4" placeholder="Type your response here..." class="w-full"></textarea>
-            <div class="flex justify-end gap-4">
-              <button @click="selectedEnquiry = null" class="px-6 py-2.5 text-[10px] font-bold tracking-widest text-slate-400 uppercase hover:text-slate-600">Cancel</button>
-              <button @click="handleReply" :disabled="!replyText" class="bg-brand-gold text-white px-8 py-2.5 text-[10px] font-bold tracking-widest uppercase rounded-lg shadow-lg shadow-brand-gold/20 hover:bg-brand-gold-dark transition-all disabled:opacity-50">Send Reply</button>
-            </div>
+        <div v-if="selectedEnquiry.adminReply" class="space-y-4">
+          <label class="admin-label text-brand-gold">Administrative Response</label>
+          <div class="p-8 bg-brand-gold/5 border border-brand-gold/10 rounded-[2rem] text-sm text-slate-700 leading-relaxed shadow-sm">
+            {{ selectedEnquiry.adminReply }}
           </div>
+        </div>
+
+        <div v-else class="space-y-6 pt-8 border-t border-slate-100">
+          <label class="admin-label">Compose Artisanal Reply</label>
+          <textarea 
+            v-model="replyText" 
+            rows="6" 
+            placeholder="Type your thoughtful response here..." 
+            class="w-full bg-white border border-slate-200 rounded-2xl p-6 text-sm font-medium focus:ring-1 focus:ring-brand-gold/20 outline-none transition-all shadow-sm"
+          ></textarea>
         </div>
       </div>
-    </div>
+
+      <template #footer v-if="!selectedEnquiry?.adminReply">
+        <div class="flex justify-end gap-5">
+          <button @click="selectedEnquiry = null" class="px-8 py-3.5 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">Dismiss</button>
+          <button @click="handleReply" :disabled="!replyText" class="btn-admin-primary px-12 py-3.5">
+            Send Artisanal Reply
+          </button>
+        </div>
+      </template>
+    </UiDrawer>
   </div>
 </template>
 

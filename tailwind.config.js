@@ -13,6 +13,7 @@ export default {
       colors: {
         brand: {
           gold: '#C59D43',
+          'gold-dark': '#A68436',
           charcoal: '#212121',
           cream: '#F9F6F0',
         }

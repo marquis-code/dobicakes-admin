@@ -1,121 +1,98 @@
 <template>
-  <TransitionRoot appear :show="isOpen" as="template">
-    <Dialog as="div" @close="closeModal" class="relative z-50">
-      <TransitionChild
-        as="template"
-        enter="duration-300 ease-out"
-        enter-from="opacity-0"
-        enter-to="opacity-100"
-        leave="duration-200 ease-in"
-        leave-from="opacity-100"
-        leave-to="opacity-0"
-      >
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" />
-      </TransitionChild>
+ <UiDrawer 
+ :model-value="isOpen" 
+ :title="`Order Detail #${order?._id.slice(-6)}`"
+ subtitle="Reviewing fulfillment details and customer requirements"
+ @update:model-value="closeModal"
+ >
+ <div v-if="order" class="space-y-12">
+ <!-- Customer Info -->
+ <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+ <div class="space-y-3 p-6 bg-slate-50/50 rounded-2xl border border-slate-100">
+ <span class="text-xs font-bold tracking-tight text-slate-400">Customer Profile</span>
+ <div class="flex flex-col gap-1">
+ <p class="text-sm font-bold text-slate-900 tracking-tight">{{ order.shippingAddress.name }}</p>
+ <p class="text-xs text-slate-500 font-medium">{{ order.shippingAddress.phone }}</p>
+ </div>
+ </div>
+ <div class="space-y-3 p-6 bg-slate-50/50 rounded-2xl border border-slate-100">
+ <span class="text-xs font-bold tracking-tight text-slate-400">Delivery Location</span>
+ <p class="text-sm font-medium text-slate-700 leading-relaxed">
+ {{ order.shippingAddress.address }}, {{ order.shippingAddress.city }}
+ </p>
+ </div>
+ </div>
 
-      <div class="fixed inset-0 overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4">
-          <TransitionChild
-            as="template"
-            enter="duration-300 ease-out"
-            enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100"
-            leave="duration-200 ease-in"
-            leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95"
-          >
-            <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-0 shadow-2xl shadow-slate-900/10 transition-all border border-slate-200/60">
-              <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <div>
-                  <DialogTitle as="h3" class="text-lg font-bold text-slate-900 tracking-tight">
-                    Order Details #{{ order?._id.slice(-6) }}
-                  </DialogTitle>
-                  <p class="text-[10px] text-slate-400 tracking-widest uppercase">Processing fulfillment for customer order</p>
-                </div>
-                <button @click="closeModal" class="p-2 text-slate-400 hover:text-rose-500 transition-all hover:bg-rose-50 rounded-lg">
-                  <LucideX :size="20" />
-                </button>
-              </div>
+ <!-- Items -->
+ <div class="space-y-6">
+ <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+ <span class="text-xs font-bold tracking-tight text-slate-400">Artisanal Selection</span>
+ <span class="text-tiny bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">{{ order.items.length }} Items</span>
+ </div>
+ <div class="space-y-5">
+ <div v-for="(item, idx) in order.items" :key="idx" class="flex gap-6 p-6 bg-white border border-slate-100 rounded-3xl hover:border-brand-gold/20 transition-all shadow-sm group">
+ <div class="w-24 h-24 bg-slate-50 rounded-2xl overflow-hidden shrink-0 border border-slate-100 group-hover:scale-105 transition-transform">
+ <img :src="item.product?.images?.[0]" class="w-full h-full object-cover" />
+ </div>
+ <div class="flex-grow space-y-4">
+ <div class="flex justify-between items-start">
+ <div class="flex flex-col gap-0.5">
+ <h4 class="text-sm font-bold text-slate-900 tracking-tight group-hover:text-brand-gold transition-colors">{{ item.product?.name }}</h4>
+ <span class="text-tiny text-slate-400 font-bold">Quantity: {{ item.quantity }}</span>
+ </div>
+ <span class="text-sm font-bold text-brand-gold">₦{{ item.price.toLocaleString() }}</span>
+ </div>
+ 
+ <div v-if="item.customization" class="grid grid-cols-2 gap-8 pt-4 border-t border-slate-50">
+ <div class="space-y-1.5">
+ <span class="text-tiny font-bold text-slate-400 tracking-tight">Flavor</span>
+ <p class="text-xs font-bold text-slate-700">{{ item.customization.flavor }}</p>
+ </div>
+ <div class="space-y-1.5">
+ <span class="text-tiny font-bold text-slate-400 tracking-tight">Dimension</span>
+ <p class="text-xs font-bold text-slate-700">{{ item.customization.size }}</p>
+ </div>
+ </div>
+ 
+ <div v-if="item.customization?.customMessage" class="pt-4 border-t border-slate-50">
+ <span class="text-tiny font-bold text-slate-400 tracking-tight">Inscription</span>
+ <p class="text-xs font-bold text-brand-gold italic mt-2 leading-relaxed">"{{ item.customization.customMessage }}"</p>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
 
-              <div v-if="order" class="p-8 space-y-10 max-h-[75vh] overflow-y-auto custom-scrollbar">
-                <!-- Customer Info -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                  <div class="space-y-1.5 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                    <span class="text-[9px] font-bold tracking-widest text-slate-400 uppercase">Customer Information</span>
-                    <p class="text-[11px] font-bold text-slate-900 tracking-widest">{{ order.shippingAddress.name }}</p>
-                    <p class="text-[10px] text-slate-500">{{ order.shippingAddress.phone }}</p>
-                  </div>
-                  <div class="space-y-1.5 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                    <span class="text-[9px] font-bold tracking-widest text-slate-400 uppercase">Delivery Destination</span>
-                    <p class="text-[10px] font-medium text-slate-700 tracking-widest leading-relaxed">
-                      {{ order.shippingAddress.address }}, {{ order.shippingAddress.city }}
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Items -->
-                <div class="space-y-4">
-                  <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Artisanal Selection</span>
-                  <div class="space-y-4">
-                    <div v-for="(item, idx) in order.items" :key="idx" class="flex gap-6 p-5 bg-white border border-slate-200/60 rounded-xl hover:border-slate-300 transition-all shadow-sm shadow-slate-900/5">
-                      <div class="w-20 h-20 bg-slate-50 rounded-xl overflow-hidden shrink-0 border border-slate-100">
-                        <img :src="item.product?.images?.[0]" class="w-full h-full object-cover" />
-                      </div>
-                      <div class="flex-grow space-y-3">
-                        <div class="flex justify-between items-start">
-                          <h4 class="text-[11px] font-bold text-slate-900 tracking-widest uppercase">{{ item.product?.name }} <span class="text-slate-300 ml-2">x{{ item.quantity }}</span></h4>
-                          <span class="text-[11px] font-bold text-brand-gold">₦{{ item.price.toLocaleString() }}</span>
-                        </div>
-                        
-                        <div v-if="item.customization" class="grid grid-cols-2 gap-6 pt-2 border-t border-slate-50">
-                          <div class="space-y-1">
-                            <span class="text-[8px] tracking-widest text-slate-400 uppercase font-bold">Flavor Profile</span>
-                            <p class="text-[10px] font-bold text-slate-700 tracking-widest uppercase">{{ item.customization.flavor }}</p>
-                          </div>
-                          <div class="space-y-1">
-                            <span class="text-[8px] tracking-widest text-slate-400 uppercase font-bold">Cake Dimension</span>
-                            <p class="text-[10px] font-bold text-slate-700 tracking-widest uppercase">{{ item.customization.size }}</p>
-                          </div>
-                        </div>
-                        
-                        <div v-if="item.customization?.customMessage" class="pt-3 border-t border-slate-50">
-                          <span class="text-[8px] tracking-widest text-slate-400 uppercase font-bold">Personalized Inscription</span>
-                          <p class="text-[11px] font-bold text-brand-gold italic mt-1 font-serif">"{{ item.customization.customMessage }}"</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Summary -->
-                <div class="flex justify-between items-center bg-slate-900 text-white p-8 rounded-2xl shadow-xl shadow-slate-900/20">
-                  <div class="space-y-1">
-                    <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Grand Total</span>
-                    <p class="text-2xl font-serif italic text-brand-gold">₦{{ order.totalAmount.toLocaleString() }}</p>
-                  </div>
-                  <div class="text-right">
-                    <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Payment Intelligence</span>
-                    <p class="text-[11px] font-bold tracking-widest text-emerald-400 uppercase">{{ order.status === 'PAID' ? 'Fully Secured' : order.status }}</p>
-                  </div>
-                </div>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
-        </div>
-      </div>
-    </Dialog>
-  </TransitionRoot>
+ <!-- Financial Summary -->
+ <div class="relative group">
+ <div class="absolute -inset-1 bg-gradient-to-r from-brand-gold/20 to-brand-gold-dark/20 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+ <div class="relative flex justify-between items-center bg-slate-900 text-white p-10 rounded-[1.75rem] shadow-2xl">
+ <div class="space-y-1">
+ <span class="text-tiny font-bold text-slate-400 tracking-tight">Grand Total</span>
+ <p class="text-3xl font-bold text-brand-gold">₦{{ order.totalAmount.toLocaleString() }}</p>
+ </div>
+ <div class="text-right">
+ <span class="text-tiny font-bold text-slate-400 tracking-tight">Payment Status</span>
+ <div class="flex items-center justify-end gap-2.5 mt-1">
+ <div class="w-2 h-2 rounded-full animate-pulse" :class="order.status === 'PAID' ? 'bg-emerald-400' : 'bg-amber-400'"></div>
+ <p class="text-sm font-bold tracking-wide" :class="order.status === 'PAID' ? 'text-emerald-400' : 'text-amber-400'">{{ order.status === 'PAID' ? 'Fully Secured' : order.status }}</p>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </UiDrawer>
 </template>
 
 <script setup>
 import { 
-  TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle 
+ TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle 
 } from '@headlessui/vue';
 import { LucideX } from 'lucide-vue-next';
 
 const props = defineProps({
-  isOpen: Boolean,
-  order: Object
+ isOpen: Boolean,
+ order: Object
 });
 
 const emit = defineEmits(['close']);
@@ -124,12 +101,12 @@ const closeModal = () => emit('close');
 
 <style scoped>
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+ width: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
+ @apply bg-transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 rounded-full hover:bg-slate-300;
+ @apply bg-slate-200 rounded-full hover:bg-slate-300;
 }
 </style>

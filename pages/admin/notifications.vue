@@ -3,18 +3,18 @@
     <div class="flex justify-between items-center">
       <div>
         <h3 class="text-xl font-bold text-slate-900 tracking-tight">Notification Center</h3>
-        <p class="text-[10px] text-gray-400 tracking-widest uppercase">Manage system alerts and support activity</p>
+        <p class="text-sm text-gray-800 tracking-tight ">Manage system alerts and support activity</p>
       </div>
       <div class="flex gap-4">
-        <button @click="markAllAsRead" class="px-6 py-2.5 text-[10px] font-bold tracking-widest text-slate-400 hover:text-slate-900 uppercase transition-colors">Mark all as read</button>
-        <button @click="clearAll" class="px-6 py-2.5 text-[10px] font-bold tracking-widest text-rose-400 hover:text-rose-600 uppercase transition-colors">Clear All</button>
+        <button @click="markAllAsRead" class="px-6 py-2.5 text-sm font-bold tracking-tight text-slate-400 hover:text-slate-900  transition-colors">Mark all as read</button>
+        <button @click="clearAll" class="px-6 py-2.5 text-sm font-bold tracking-tight text-rose-400 hover:text-rose-600  transition-colors">Clear All</button>
       </div>
     </div>
 
     <div class="admin-card !p-0 overflow-hidden relative min-h-[500px]">
-      <div v-if="notifications.length === 0" class="flex flex-col items-center justify-center h-[500px] text-slate-300">
+      <div v-if="notifications.length === 0" class="flex flex-col items-center justify-center h-[500px] text-slate-900">
          <LucideBellOff :size="48" class="opacity-20 mb-4" />
-         <p class="text-[10px] font-bold tracking-[0.2em] uppercase">Your inbox is clear</p>
+         <p class="text-sm font-bold  ">Your inbox is clear</p>
       </div>
 
       <div v-else class="divide-y divide-slate-50">
@@ -29,13 +29,13 @@
           <div class="flex-grow space-y-1">
             <div class="flex justify-between items-start">
               <h4 class="text-sm font-bold text-slate-900 tracking-tight">{{ notif.title }}</h4>
-              <span class="text-[9px] text-slate-400 font-medium">{{ formatDate(notif.createdAt) }}</span>
+              <span class="text-tiny text-slate-400 font-medium">{{ formatDate(notif.createdAt) }}</span>
             </div>
             <p class="text-xs text-slate-500 leading-relaxed max-w-2xl">{{ notif.message }}</p>
             
             <div class="flex gap-6 pt-3">
-              <button v-if="notif.link" @click="$router.push(notif.link)" class="text-[9px] font-bold text-brand-gold tracking-widest uppercase hover:underline">View Details</button>
-              <button v-if="!notif.isRead" @click="markAsRead(notif._id)" class="text-[9px] font-bold text-slate-400 tracking-widest uppercase hover:text-slate-900">Mark read</button>
+              <button v-if="notif.link" @click="$router.push(notif.link)" class="text-tiny font-bold text-brand-gold tracking-tight  hover:underline">View Details</button>
+              <button v-if="!notif.isRead" @click="markAsRead(notif._id)" class="text-tiny font-bold text-slate-400 tracking-tight  hover:text-slate-900">Mark read</button>
             </div>
           </div>
 

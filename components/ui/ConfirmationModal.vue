@@ -24,7 +24,7 @@
             leave-from="opacity-100 scale-100 translate-y-0"
             leave-to="opacity-0 scale-95 translate-y-4"
           >
-            <DialogPanel class="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all border border-slate-100">
+            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all border border-slate-100">
               <div class="flex flex-col items-center text-center space-y-4">
                 <div 
                   class="w-16 h-16 rounded-full flex items-center justify-center"
@@ -33,7 +33,7 @@
                   <component :is="icon" :size="32" stroke-width="1.5" />
                 </div>
                 
-                <DialogTitle as="h3" class="text-lg font-bold text-slate-900 tracking-tight">
+                <DialogTitle as="h3" class="text-lg font-medium text-slate-900 tracking-tight">
                   {{ title }}
                 </DialogTitle>
                 
@@ -45,7 +45,7 @@
               <div class="mt-8 flex gap-3">
                 <button
                   type="button"
-                  class="flex-1 inline-flex justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-[10px] font-bold tracking-widest text-slate-700 hover:bg-slate-50 hover:text-slate-900 focus:outline-none transition-colors uppercase"
+                  class="flex-1 inline-flex justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium tracking-tight text-slate-700 hover:bg-slate-50 hover:text-slate-900 focus:outline-none transition-colors "
                   @click="closeModal"
                   :disabled="isLoading"
                 >
@@ -53,7 +53,7 @@
                 </button>
                 <button
                   type="button"
-                  class="flex-1 inline-flex justify-center rounded-xl border border-transparent px-4 py-3 text-[10px] font-bold tracking-widest text-white focus:outline-none transition-all shadow-sm uppercase items-center gap-2"
+                  class="flex-1 inline-flex justify-center rounded-xl border border-transparent px-4 py-3 text-sm font-medium tracking-tight text-white focus:outline-none transition-all shadow-sm  items-center gap-2"
                   :class="[
                     type === 'danger' 
                       ? 'bg-rose-500 hover:bg-rose-600 shadow-rose-500/20' 
@@ -111,7 +111,7 @@ const props = defineProps({
     default: 'danger', // 'danger' or 'warning'
   },
   icon: {
-    type: Object,
+    type: [Object, Function],
     default: () => LucideAlertTriangle,
   },
   isLoading: {

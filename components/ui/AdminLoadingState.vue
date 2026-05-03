@@ -5,8 +5,8 @@
       <div class="w-16 h-16 border-4 border-t-brand-gold rounded-full absolute top-0 left-0 animate-spin"></div>
     </div>
     <div class="text-center space-y-1">
-      <p class="text-xs font-bold text-slate-400 tracking-widest uppercase">Fetching Excellence</p>
-      <p class="text-[10px] text-slate-300 italic">One moment please...</p>
+      <p class="text-xs font-bold text-slate-400 tracking-tight ">Fetching Excellence</p>
+      <p class="text-sm text-slate-900 italic">One moment please...</p>
     </div>
   </div>
 </template>
