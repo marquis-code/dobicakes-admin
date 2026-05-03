@@ -6,11 +6,11 @@
     </div>
 
     <!-- Orders Table -->
-    <div class="admin-card !p-0 overflow-hidden relative min-h-[400px]">
+    <div class="admin-card !p-0 relative min-h-[400px]">
       <UiAdminLoadingState v-if="loading" />
       
       <template v-else-if="orders.length > 0">
-        <div class="overflow-x-auto">
+        <div>
           <table class="w-full text-left border-collapse">
             <thead class="bg-slate-50 border-b border-slate-100">
               <tr>
@@ -36,15 +36,19 @@
                   <span class="text-[9px] font-bold tracking-widest py-1 px-2 bg-slate-100 rounded-md text-slate-600">{{ formatLabel(order.paymentMethod) }}</span>
                 </td>
                 <td class="px-6 py-4" @click.stop>
-                  <select v-model="order.status" @change="updateStatus(order)" 
-                          class="text-[9px] font-bold tracking-widest px-3 py-1.5 rounded-lg outline-none border-none cursor-pointer transition-all hover:ring-2 hover:ring-offset-1"
-                          :class="statusClasses[order.status]">
-                    <option value="PENDING">Pending</option>
-                    <option value="PAID">Paid</option>
-                    <option value="PROCESSING">Processing</option>
-                    <option value="DELIVERED">Delivered</option>
-                    <option value="CANCELLED">Cancelled</option>
-                  </select>
+                  <UiSelect 
+                    v-model="order.status" 
+                    @update:model-value="updateStatus(order)"
+                    :options="[
+                      { label: 'Pending', value: 'PENDING' },
+                      { label: 'Paid', value: 'PAID' },
+                      { label: 'Processing', value: 'PROCESSING' },
+                      { label: 'Delivered', value: 'DELIVERED' },
+                      { label: 'Cancelled', value: 'CANCELLED' }
+                    ]"
+                    compact
+                    class="w-32"
+                  />
                 </td>
                 <td class="px-6 py-4 text-right text-[10px] text-slate-400 tracking-widest">
                   {{ new Date(order.createdAt).toLocaleDateString() }}

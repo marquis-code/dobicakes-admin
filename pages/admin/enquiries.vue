@@ -130,9 +130,11 @@ const handleReply = async () => {
     selectedEnquiry.value.adminReply = replyText.value;
     selectedEnquiry.value.status = 'replied';
     replyText.value = '';
-    // Show toast?
+    const { success } = useToast();
+    success('Reply sent successfully');
   } catch (e) {
-    alert('Failed to send reply');
+    const { error } = useToast();
+    error('Failed to send reply');
   }
 };
 

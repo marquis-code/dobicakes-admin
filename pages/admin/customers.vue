@@ -6,11 +6,11 @@
     </div>
 
     <!-- Users Table -->
-    <div class="admin-card !p-0 overflow-hidden relative min-h-[400px]">
+    <div class="admin-card !p-0 relative min-h-[400px]">
       <UiAdminLoadingState v-if="loading" />
       
       <template v-else-if="customers.length > 0">
-        <div class="overflow-x-auto">
+        <div class="overflow-visible">
           <table class="w-full text-left border-collapse">
             <thead class="bg-slate-50 border-b border-slate-100">
               <tr>

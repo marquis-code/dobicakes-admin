@@ -24,11 +24,22 @@ export const useAdminAuth = () => {
     navigateTo('/login');
   };
 
+  const fetchProfile = async () => {
+    if (!token.value) return;
+    try {
+      const response: any = await fetchAdmin('/auth/profile');
+      admin.value = response;
+    } catch (e) {
+      logout();
+    }
+  };
+
   return {
     admin,
     token,
     login,
     logout,
+    fetchProfile,
     isLoggedIn: computed(() => !!admin.value),
   };
 };

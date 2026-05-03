@@ -53,7 +53,8 @@ const handleLogin = async () => {
     await login(form.value);
     navigateTo('/admin');
   } catch (error) {
-    alert('Access Denied: Invalid admin credentials');
+    const { error: toastError } = useToast();
+    toastError('Access Denied: Invalid admin credentials');
   } finally {
     loading.value = false;
   }
