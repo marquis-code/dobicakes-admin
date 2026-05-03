@@ -10,7 +10,7 @@ const redirectToLogin = () => {
   }
 };
 
-const $GATEWAY_ENDPOINT = import.meta.env.VITE_BASE_URL || 'http://localhost:4000';
+const $GATEWAY_ENDPOINT = 'https://dobicakes-backend.onrender.com';
 
 export const GATEWAY_ENDPOINT = axios.create({
   baseURL: $GATEWAY_ENDPOINT,
